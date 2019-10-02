@@ -1,9 +1,8 @@
 #!/bin/bash
-sudo su
 cd /
 apt-get update
 cd
-curl -fsSL https://get.docker.com -o get-docker.sh
+sudo curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 sudo usermod -aG docker ubuntu
 cd /
