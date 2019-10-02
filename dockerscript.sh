@@ -8,6 +8,7 @@ sudo usermod -aG docker ubuntu
 cd /
 sudo mkdir /var/jenkins_home
 sudo chown 1000:1000 /var/jenkins_home
-sudo docker run --name jenkins -d -v /var/jenkins_home:/var/jenkins_home -p 8080:8080 \
+sudo docker run --name jenkins -d -v /var/jenkins_home:/var/jenkins_home \
+-p 8080:8080 \
 -p 50000:50000 --restart always jenkins/jenkins:lts \
 \
