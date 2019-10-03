@@ -9,7 +9,7 @@ cd /
 sudo mkdir /etc/script
 cd /etc/script
 wget https://github.com/kohbah/jenkins-docker/blob/master/Dockerfile
-sudo docker build -t jenkins-docker
+sudo docker build -t jenkins-docker .
 cd /
 sudo mkdir /var/jenkins_home
 sudo chown -R 1000:1000 /var/jenkins_home
