@@ -8,7 +8,8 @@ sudo usermod -aG docker ubuntu
 cd /
 sudo mkdir /etc/script
 cd /etc/script
-wget https://github.com/kohbah/jenkins-docker/blob/master/Dockerfile
+git clone https://github.com/kohbah/jenkins-docker
+cd jenkins-docker/
 sudo docker build -t jenkins-docker .
 cd /
 sudo mkdir /var/jenkins_home
