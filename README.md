@@ -29,3 +29,6 @@ sonatype/nexus3 \
 
 
 docker network create nexus-net
+
+
+new relic https://docs.newrelic.com/docs/infrastructure/new-relic-infrastructure/data-instrumentation/monitor-containers-underlying-hosts-coreos
