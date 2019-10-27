@@ -1,0 +1,1 @@
+ docker run -d -t --network net  --name app01 --restart always centos:latest
