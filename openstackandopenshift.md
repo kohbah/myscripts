@@ -9,4 +9,4 @@ DATABASE_PASSWORD=$ADMIN_PASSWORD
 RABBIT_PASSWORD=$ADMIN_PASSWORD
 SERVICE_PASSWORD=$ADMIN_PASSWORD
 
-https://github.com/openshift/installer   for openshift. 
+https://github.com/openshift/installer   for openshift.  and install go with    https://tecadmin.net/install-go-on-ubuntu/
