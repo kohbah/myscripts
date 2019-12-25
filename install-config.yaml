@@ -1,0 +1,49 @@
+apiVersion: v1
+baseDomain: kohbah.com 
+controlPlane: 
+  hyperthreading: Enabled   
+  name: master
+  platform:
+    aws:
+      zones:
+      - us-east-1a
+      - us-east-1b
+      rootVolume:
+        iops: 2000
+        size: 100
+        type: gp2
+      type: t3a.medium 
+  replicas: 1
+compute: 
+- hyperthreading: Enabled 
+  name: worker
+  platform:
+    aws:
+      rootVolume:
+        iops: 2000
+        size: 100
+        type: gp2 
+      type: t3a.medium 
+      zones:
+      - us-east-1c
+  replicas: 1
+metadata:
+  name: test-cluster 
+networking:
+  clusterNetwork:
+  - cidr: 10.128.0.0/14
+    hostPrefix: 23
+  machineCIDR: 10.0.0.0/16
+  networkType: OpenShiftSDN
+  serviceNetwork:
+  - 172.30.0.0/16
+platform:
+  aws:
+    region: us-east-1
+    userTags:
+      adminContact: marcel
+      costCenter: 7536
+pullSecret: '{"auths":{"cloud.openshift.com":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K2tvaGJhaDF2ZGRwd3M3djFub2w5dHNyM2N5bmNjc283bTpMV1M2MVJNSzNFR040NlNBV0xQSURQVE9CVjUyREJTU1A4UFAzNUI3U0FIUlQ1QVhLVzhDQUNFSzZYRENWUDRa","email":"m.kohbah@yahoo.com"},"quay.io":{"auth":"b3BlbnNoaWZ0LXJlbGVhc2UtZGV2K2tvaGJhaDF2ZGRwd3M3djFub2w5dHNyM2N5bmNjc283bTpMV1M2MVJNSzNFR040NlNBV0xQSURQVE9CVjUyREJTU1A4UFAzNUI3U0FIUlQ1QVhLVzhDQUNFSzZYRENWUDRa","email":"m.kohbah@yahoo.com"},"registry.connect.redhat.com":{"auth":"NTI5NzQ1Nzh8dWhjLTFWRGRQV3M3VjFuT0w5VHNSM0NZbmNDU083bTpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTBZV1k0Wm1abVlXWXhZbVEwTlRZd09UVXlOakJoWWpBMk1qSm1aV1U0WlNKOS51ZS1GSGxSUTY4NllEOWhVY01VbHBfcm9DOUJva1VHN0RKSkwyN19kbHFqTl8wcWlyV0ZMVGZvT1ZsSnIxOWJJWXpBcE1fNGpVd0p4TFBsemNlLXg1dXcxejQ1WTNBSW04V1ZTR2F6c1dBdTRIa0c5enhfOWpXY01xeWJra0RDeFdtZWNySVFYaHJHOFFmUmhQRVZQbTdCMWJYcEFpLTA5c19uQmEyUmZFRTkxQzFpejEwREdvc25MdFJCWUpXeHhBUWYwQ3pjYXQ2RWRZTmdwLWJDNWRvRXpTbUl6TEhIQTJicmtsX2Uxbkh6cVhqUnc0dGlSZDNERkxYMzNMeEsxY3pPZ1NzQlF5cUs1b05lak5LbWZEenFjRy1FdEdjTy1kVFpvS0hMM2RISWdHNldaeHI5YS1NUlZlWVUxcXkyWDgxbV9obVp1anBFNzNwb0pFdDctbjNPdEdVQVJYR196QzNUT18yZ085emVwcUtiaE1zYnA0X1FFaXk0TEFPU2FfRVpIM2x3YVd6VFpMMENGQ0RMUUVINE5sYURUaHlCQ2xHeE9VU0g4LUxrVnFObUg1UDdwaFB4VGdNLXY0WmdBWEhzZzdzYUpIY2hKb0tLbTNOckZlY2NQTlJDYk9zVDJiQi14dmhGYjVvNVNiOHdmckR2d3JTZ1J2enFWOFZfVkdmdjRVanp0N1Q1RGJscmVNX0NuZjBfRWw1b2JoVDQ5Wi1YYXpaQmJMY0dERkxCRXFLSWxpOVFUR2NCWW1LdVhaSldGN3lyYlBzanl1WmFuVGYtMG5fcmZ4b1RzaW5qeDFuMDlRb3laczhVQ3VyWXFrZXVrLUxnYjQyRUtMN0x6eXlGeDZ4T21oX3BVXzZhdWJCYkwtRGFPTGtja2I3bmo3bHlSZEJDcHdLNA==","email":"m.kohbah@yahoo.com"},"registry.redhat.io":{"auth":"NTI5NzQ1Nzh8dWhjLTFWRGRQV3M3VjFuT0w5VHNSM0NZbmNDU083bTpleUpoYkdjaU9pSlNVelV4TWlKOS5leUp6ZFdJaU9pSTBZV1k0Wm1abVlXWXhZbVEwTlRZd09UVXlOakJoWWpBMk1qSm1aV1U0WlNKOS51ZS1GSGxSUTY4NllEOWhVY01VbHBfcm9DOUJva1VHN0RKSkwyN19kbHFqTl8wcWlyV0ZMVGZvT1ZsSnIxOWJJWXpBcE1fNGpVd0p4TFBsemNlLXg1dXcxejQ1WTNBSW04V1ZTR2F6c1dBdTRIa0c5enhfOWpXY01xeWJra0RDeFdtZWNySVFYaHJHOFFmUmhQRVZQbTdCMWJYcEFpLTA5c19uQmEyUmZFRTkxQzFpejEwREdvc25MdFJCWUpXeHhBUWYwQ3pjYXQ2RWRZTmdwLWJDNWRvRXpTbUl6TEhIQTJicmtsX2Uxbkh6cVhqUnc0dGlSZDNERkxYMzNMeEsxY3pPZ1NzQlF5cUs1b05lak5LbWZEenFjRy1FdEdjTy1kVFpvS0hMM2RISWdHNldaeHI5YS1NUlZlWVUxcXkyWDgxbV9obVp1anBFNzNwb0pFdDctbjNPdEdVQVJYR196QzNUT18yZ085emVwcUtiaE1zYnA0X1FFaXk0TEFPU2FfRVpIM2x3YVd6VFpMMENGQ0RMUUVINE5sYURUaHlCQ2xHeE9VU0g4LUxrVnFObUg1UDdwaFB4VGdNLXY0WmdBWEhzZzdzYUpIY2hKb0tLbTNOckZlY2NQTlJDYk9zVDJiQi14dmhGYjVvNVNiOHdmckR2d3JTZ1J2enFWOFZfVkdmdjRVanp0N1Q1RGJscmVNX0NuZjBfRWw1b2JoVDQ5Wi1YYXpaQmJMY0dERkxCRXFLSWxpOVFUR2NCWW1LdVhaSldGN3lyYlBzanl1WmFuVGYtMG5fcmZ4b1RzaW5qeDFuMDlRb3laczhVQ3VyWXFrZXVrLUxnYjQyRUtMN0x6eXlGeDZ4T21oX3BVXzZhdWJCYkwtRGFPTGtja2I3bmo3bHlSZEJDcHdLNA==","email":"m.kohbah@yahoo.com"}}}'
+sshKey: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDAbM3UO4F426mU4eHg6Ogb52rFtGC1yk7EQ66c515DEvT9O0/cL3rRFMmi5M7JKNT08MkzzitzNkciH75bsgTmJhl8Uryg4w18ePWCOmwhQJXk6ty/KScnKjrDEfEvLTKGCtIf49wMPcErhqZBvsUQnlH9EkEegmO0LWqPeVjxCekNkFepRoCMKHzhKTwqio09KECDwdoQRDM7BWYFSZASO5OYgO8MJ7ziLhjCCjIEV1kRhx/btEHevJeM8fFvOMcSZZYos0OlKgWTraLuH1nAw9UcPf7flkV26QoIjp1SXxMX4ZAcsvlYl2gohF9kAqFupjo6w1ieic5kuOFQKyGd devopslinux
+
+
