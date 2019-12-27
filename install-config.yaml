@@ -9,10 +9,10 @@ controlPlane:
       - us-east-1a
       - us-east-1b
       rootVolume:
-        iops: 2000
-        size: 100
-        type: gp2
-      type: t3a.medium 
+        iops: 4000
+        size: 500
+        type: io1
+      type: m5.xlarge  
   replicas: 1
 compute: 
 - hyperthreading: Enabled 
@@ -21,9 +21,9 @@ compute:
     aws:
       rootVolume:
         iops: 2000
-        size: 100
-        type: gp2 
-      type: t3a.medium 
+        size: 500
+        type: io1 
+      type: c5.4xlarge
       zones:
       - us-east-1c
   replicas: 1
