@@ -2,6 +2,8 @@ https://github.com/openstack/devstack.git    for openstack.  local.conf with teh
 
 https://docs.openstack.org/devstack/latest/
 
+https://bugs.launchpad.net/zun/+bug/1631232
+
 [[local|localrc]]
 HOST_IP=0.0.0.0   #replace 0.0.0.0 with your ip
 ADMIN_PASSWORD=4rfv$RFV
