@@ -1,0 +1,533 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Metadata:
+
+    Generator: "former2"
+
+Description: "Template for AWS Cognito. SMART on FHIR configuration from Amida SOW1 (March/April 2020) proof of concept for repo:cnsi-fhir-rest tag:v0.4.6-demo-20200427"
+
+Parameters:
+
+  ParamDemoUserEmail:
+
+    Type: String
+
+    Description: "Enter a valid email for the Demo User. A temporary credential will be emailed to this address from no-reply@verificationemail.com"
+
+
+
+  ParamUserPoolName:
+
+    Type: String
+
+    Default: "cf-cnsi-fhir-cognito-v0.6.0"
+
+    Description: "Enter the name of the AWS Cognito UserPool. This name must be unique within your account region."
+
+
+
+  ParamUserPoolDomain:
+
+    Type: String
+
+    Default: "fhir-auth-server-nncsyixn"
+
+    Description: "Enter the name of the AWS Cognito UserPoolDomain. This name must be globally unique in the AWS Region and is used to construct OAuth server URLs, e.g. https://<ParamUserPoolDomain>.auth.<AWSRegion>.amazoncognito.com/oauth2/authorize"
+
+
+
+Resources:
+
+    CognitoUserPool:
+
+        Type: "AWS::Cognito::UserPool"
+
+        Properties:
+
+            UserPoolName: !Ref ParamUserPoolName
+
+            Policies: 
+
+                PasswordPolicy: 
+
+                    MinimumLength: 8
+
+                    RequireUppercase: true
+
+                    RequireLowercase: true
+
+                    RequireNumbers: true
+
+                    RequireSymbols: true
+
+                    TemporaryPasswordValidityDays: 7
+
+            UserPoolAddOns:
+
+                AdvancedSecurityMode: "AUDIT"
+
+            LambdaConfig: {}
+
+            Schema:
+
+              - 
+
+                Name: "email"
+
+                AttributeDataType: "String"
+
+                DeveloperOnlyAttribute: false
+
+                Mutable: true
+
+                Required: true
+
+                StringAttributeConstraints:
+
+                    MinLength: "0"
+
+                    MaxLength: "2048"
+
+              - 
+
+                Name: "medicare_bene_id"
+
+                AttributeDataType: "String"
+
+                DeveloperOnlyAttribute: false
+
+                Mutable: true
+
+                Required: false
+
+                StringAttributeConstraints: 
+
+                    MinLength: "1"
+
+                    MaxLength: "256"
+
+              - 
+
+                Name: "medicaid_state_id"
+
+                AttributeDataType: "String"
+
+                DeveloperOnlyAttribute: false
+
+                Mutable: true
+
+                Required: false
+
+                StringAttributeConstraints: 
+
+                    MinLength: "1"
+
+                    MaxLength: "256"
+
+            AutoVerifiedAttributes: 
+
+              - "email"
+
+            MfaConfiguration: "OFF"
+
+            EmailConfiguration: 
+
+                EmailSendingAccount: "COGNITO_DEFAULT"
+
+            AdminCreateUserConfig: 
+
+                AllowAdminCreateUserOnly: false
+
+            UserPoolTags: {}
+
+            AccountRecoverySetting: 
+
+                RecoveryMechanisms: 
+
+                  - 
+
+                    Priority: 1
+
+                    Name: "verified_email"
+
+            UsernameConfiguration: 
+
+                CaseSensitive: false
+
+            VerificationMessageTemplate: 
+
+                DefaultEmailOption: "CONFIRM_WITH_CODE"
+
+
+
+    CognitoUserPoolPatientResourceServer:
+
+        Type: "AWS::Cognito::UserPoolResourceServer"
+
+        Properties:
+
+            Identifier: "patient"
+
+            Name: "Patient resources"
+
+            UserPoolId: !Ref CognitoUserPool
+
+            Scopes:
+
+              -
+
+                ScopeName: "*.read"
+
+                ScopeDescription: "Wildcard read scope, allowing Read of all patient information"
+
+              -
+
+                ScopeName: "Contract.read"
+
+                ScopeDescription: "Read contract details"
+
+              -
+
+                ScopeName: "Coverage.read"
+
+                ScopeDescription: "Read coverage details"
+
+              -
+
+                ScopeName: "ExplanationOfBenefit.read"
+
+                ScopeDescription: "Read explanation of benefits"
+
+              -
+
+                ScopeName: "Patient.read"
+
+                ScopeDescription: "Read patient demographics"
+
+              -
+
+                ScopeName: "RelatedPerson.read"
+
+                ScopeDescription: "Read related person"
+
+
+
+    CognitoUserPoolUserResourceServer:
+
+        Type: "AWS::Cognito::UserPoolResourceServer"
+
+        Properties:
+
+            Identifier: "user"
+
+            Name: "User resources"
+
+            UserPoolId: !Ref CognitoUserPool
+
+            Scopes:
+
+              -
+
+                ScopeName: "*.read"
+
+                ScopeDescription: "Wildcard read scope for user-accessible non-patient information"
+
+              -
+
+                ScopeName: "Location.read"
+
+                ScopeDescription: "Read location details"
+
+              -
+
+                ScopeName: "Organization.read"
+
+                ScopeDescription: "Read organization details"
+
+              -
+
+                ScopeName: "Practitioner.read"
+
+                ScopeDescription: "Read practitioner details"
+
+              -
+
+                ScopeName: "PractitionerRole.read"
+
+                ScopeDescription: "Read practitioner role"
+
+              -
+
+                ScopeName: "ExplanationOfBenefit.read"
+
+                ScopeDescription: "Read explanation of benefits"
+
+
+
+    CognitoUserPoolLaunchResourceServer:
+
+        Type: "AWS::Cognito::UserPoolResourceServer"
+
+        Properties:
+
+            Identifier: "launch"
+
+            Name: "Launch resources"
+
+            UserPoolId: !Ref CognitoUserPool
+
+            Scopes:
+
+              -
+
+                ScopeName: "patient"
+
+                ScopeDescription: "Need patient context at launch time (FHIR Patient resource)"
+
+              -
+
+                ScopeName: "encounter"
+
+                ScopeDescription: "Need encounter context at launch time (FHIR Encounter resource)"
+
+  
+
+    CognitoUserPoolDomain:
+
+        Type: "AWS::Cognito::UserPoolDomain"
+
+        Properties:
+
+          Domain: !Ref ParamUserPoolDomain
+
+          UserPoolId: !Ref CognitoUserPool
+
+
+
+    CognitoUserPoolClient:
+
+        Type: "AWS::Cognito::UserPoolClient"
+
+        DependsOn: ["CognitoUserPoolPatientResourceServer", "CognitoUserPoolUserResourceServer", "CognitoUserPoolLaunchResourceServer"]
+
+        Properties:
+
+            UserPoolId: !Ref CognitoUserPool
+
+            ClientName: "cnsi-demo-client"
+
+            SupportedIdentityProviders:
+
+              - "COGNITO"
+
+            AllowedOAuthFlowsUserPoolClient: true
+
+            AllowedOAuthFlows:
+
+              - "code" 
+
+              - "implicit"
+
+            AllowedOAuthScopes:
+
+              - "launch/encounter"
+
+              - "launch/patient"
+
+              - "profile"
+
+              - "openid"
+
+              - "patient/*.read"
+
+              - "patient/Contract.read"
+
+              - "patient/Coverage.read"
+
+              - "patient/ExplanationOfBenefit.read"
+
+              - "patient/Patient.read"
+
+              - "patient/RelatedPerson.read"
+
+              - "user/*.read"
+
+              - "user/Location.read"
+
+              - "user/Organization.read"
+
+              - "user/Practitioner.read"
+
+              - "user/PractitionerRole.read"
+
+            CallbackURLs:
+
+              - "http://localhost:8080"
+
+            ExplicitAuthFlows: 
+
+              - "ALLOW_ADMIN_USER_PASSWORD_AUTH"
+
+              - "ALLOW_USER_PASSWORD_AUTH"
+
+              - "ALLOW_CUSTOM_AUTH"
+
+              - "ALLOW_REFRESH_TOKEN_AUTH"
+
+              - "ALLOW_USER_SRP_AUTH"
+
+            GenerateSecret: true
+
+            LogoutURLs:
+
+              - "http://localhost:8080/logout"
+
+            PreventUserExistenceErrors: "ENABLED"
+
+            RefreshTokenValidity: 30
+
+            ReadAttributes: 
+
+              - "address"
+
+              - "birthdate"
+
+              - "custom:medicaid_state_id"
+
+              - "custom:medicare_bene_id"
+
+              - "email"
+
+              - "email_verified"
+
+              - "family_name"
+
+              - "gender"
+
+              - "given_name"
+
+              - "locale"
+
+              - "middle_name"
+
+              - "name"
+
+              - "nickname"
+
+              - "phone_number"
+
+              - "phone_number_verified"
+
+              - "picture"
+
+              - "preferred_username"
+
+              - "profile"
+
+              - "updated_at"
+
+              - "website"
+
+              - "zoneinfo"
+
+
+
+    CognitoUserPoolUser:
+
+        Type: "AWS::Cognito::UserPoolUser"
+
+        Properties:
+
+            Username: "demo-user-001"
+
+            UserPoolId: !Ref CognitoUserPool
+
+            UserAttributes: 
+
+              - 
+
+                Name: "email_verified"
+
+                Value: "true"
+
+              - 
+
+                Name: "email"
+
+                Value: !Ref ParamDemoUserEmail
+
+              - 
+
+                Name: "custom:medicaid_state_id"
+
+                Value: "10"
+
+              - 
+
+                Name: "custom:medicare_bene_id"
+
+                Value: "11"
+
+
+
+    UserGroupAttachment:
+
+      Type: AWS::Cognito::UserPoolUserToGroupAttachment
+
+      DependsOn: "MedicaidMemberGroup"
+
+      Properties: 
+
+        GroupName: MedicaidMember
+
+        Username: "demo-user-001"
+
+        UserPoolId: !Ref CognitoUserPool
+
+
+
+    AdminGroup:
+
+      Type: AWS::Cognito::UserPoolGroup
+
+      Properties: 
+
+        Description: "CNSI Admin Group"
+
+        GroupName: CNSIAdmin
+
+        Precedence: 0
+
+        UserPoolId: !Ref CognitoUserPool
+
+
+
+    MedicaidAdminGroup:
+
+      Type: AWS::Cognito::UserPoolGroup
+
+      Properties: 
+
+        Description: "Medicaid Admin Group"
+
+        GroupName: MedicaidAdmin
+
+        Precedence: 1
+
+        UserPoolId: !Ref CognitoUserPool
+
+
+
+    MedicaidMemberGroup:
+
+      Type: AWS::Cognito::UserPoolGroup
+
+      Properties: 
+
+        Description: "Medicaid Member Group"
+
+        GroupName: MedicaidMember
+
+        Precedence: 2
+
+        UserPoolId: !Ref CognitoUserPool
